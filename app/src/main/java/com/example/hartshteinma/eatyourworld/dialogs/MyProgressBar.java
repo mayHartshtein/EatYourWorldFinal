@@ -23,6 +23,10 @@ public class MyProgressBar {
         progressDialog.setIndeterminate(true);
     }
 
+    public MyProgressBar() {
+
+    }
+
     public void showProgressDialog() {
 //        if (progressDialog == null) {
 //            progressDialog = new ProgressDialog(context);

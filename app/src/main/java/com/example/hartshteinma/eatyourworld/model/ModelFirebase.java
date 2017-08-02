@@ -59,6 +59,7 @@ public class ModelFirebase implements CloudManager, AuthManager, ImagesLoader {
 
     @Override
     public void login(String email, String password, final LoginListener loginListener) {
+        //"mayhart111@gmail.com", "123456"
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {

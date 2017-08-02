@@ -10,12 +10,14 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.hartshteinma.eatyourworld.R;
+import com.example.hartshteinma.eatyourworld.dialogs.MyProgressBar;
 
 public class SignInFragment extends Fragment {
 
     private EditText emailEt, passwordEt;
     private Button signInButton;
     private Delegate delegate;
+    private MyProgressBar progressBar;
 
     public SignInFragment() {
     }
@@ -43,6 +45,7 @@ public class SignInFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 delegate.onSignInPressed(emailEt.getText().toString(), passwordEt.getText().toString());
+
             }
         });
     }

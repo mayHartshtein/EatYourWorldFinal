@@ -104,8 +104,9 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/buttons_bar"
-        android:layout_below="@id/table_layout">
+        android:layout_below="@+id/table_layout"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/buttons_bar">
 
         <EditText
             android:id="@+id/fragmemt_newRecipe_recipeDetail"

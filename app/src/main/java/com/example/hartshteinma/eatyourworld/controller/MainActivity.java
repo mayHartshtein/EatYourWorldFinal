@@ -94,6 +94,8 @@ public class MainActivity extends Activity {
                     @Override
                     public void onLoginFinished(boolean login) {
                         if (login) {
+                            // ADD
+
                             Model.getInstance().setUserByEmail(email);
                             switchToFragment(recipesListFragment);
                             recipesListFragment.refreshListView();
