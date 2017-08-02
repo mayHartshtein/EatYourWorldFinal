@@ -1,0 +1,66 @@
+{
+  "project_info": {
+    "project_number": "303155693913",
+    "firebase_url": "https://eatyourworld-c0d59.firebaseio.com",
+    "project_id": "eatyourworld-c0d59",
+    "storage_bucket": "eatyourworld-c0d59.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:303155693913:android:0cc7e691475c64ab",
+        "android_client_info": {
+          "package_name": "com.example.hartshteinma.eatyourworld"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "303155693913-9fcnf7mebotcnliccm8ansvukl3l58e0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hartshteinma.eatyourworld",
+            "certificate_hash": "fd8a08cfa0be99f3aff105f8adabd67b919203fe"
+          }
+        },
+        {
+          "client_id": "303155693913-c9dogkev21l8mdin2tdvfqctfh7pa8p8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hartshteinma.eatyourworld",
+            "certificate_hash": "6732e8316c43fe54f4ed297b1cf3c8ecce24a679"
+          }
+        },
+        {
+          "client_id": "303155693913-79pnp04vtghv1lkp4b13kqm858r73082.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWCaOxm01wTlMhaoPjgCmJPWzoJLTHIV0"
+        },
+        {
+          "current_key": "AIzaSyBZxPwNOSi6ZbYH2_KwjVHh7rpANfuZoJo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "303155693913-79pnp04vtghv1lkp4b13kqm858r73082.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

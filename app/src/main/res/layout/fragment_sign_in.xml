@@ -1,0 +1,92 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.hartshteinma.eatyourworld.controller.fragments.SignInFragment">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:fontFamily="sans-serif-smallcaps"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:paddingTop="50dp"
+        android:text="Sign In"
+        android:textAlignment="center"
+        android:textSize="50dp"
+        android:textStyle="bold" />
+
+    <TableLayout
+        android:id="@+id/tableLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:paddingTop="50dp">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email address :"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/fragmemt_signIn_emailEdit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Enter email address"
+                android:inputType="textEmailAddress"
+                android:text="mayhart111@gmail.com" />
+
+        </TableRow>
+
+
+        <TableRow
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Password :"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/fragmemt_signIn_passwordEdit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Enter password"
+                android:inputType="textPassword"
+                android:text="123456" />
+        </TableRow>
+
+    </TableLayout>
+
+    <Button
+        android:id="@+id/fragment_signIn_signInButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableLayout2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="14dp"
+        android:fontFamily="sans-serif-smallcaps"
+        android:text="sing in"
+        android:textStyle="bold" />
+
+</RelativeLayout>
