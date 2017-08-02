@@ -2,18 +2,14 @@ package com.example.hartshteinma.eatyourworld.controller.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.icu.util.Calendar;
-import android.media.ExifInterface;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,30 +22,30 @@ import com.example.hartshteinma.eatyourworld.R;
 import com.example.hartshteinma.eatyourworld.controller.Constants;
 import com.example.hartshteinma.eatyourworld.model.Model;
 import com.example.hartshteinma.eatyourworld.model.Recipe;
-import com.example.hartshteinma.eatyourworld.model.Utilities;
+import com.example.hartshteinma.eatyourworld.model.interfaces.SaveImageListener;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class NewRecipeFragment extends Fragment implements View.OnClickListener {
     private EditText countryEt, nameEt, detailsEt;
     private Button saveButton1, cancelButton1, artButton1;
     private ImageView addImageButton;
     private Delegate delegate;
-    String userChoosenTask;
+    private String userChoosenTask;
+    private Bitmap currentBitmap;
+    private String currentUserId;
 
     public NewRecipeFragment() {
+    }
 
+    public void setCurrentUserId(String currentUserId) {
+        this.currentUserId = currentUserId;
     }
 
     public interface Delegate {
-
         void onSaveButtonClick(Recipe recipe);
 
         void onCancelButtonClick();
-
-
     }
 
     public void setDelegate(Delegate delegate) {
@@ -64,7 +60,6 @@ public class NewRecipeFragment extends Fragment implements View.OnClickListener 
     }
 
     private void initWidgets(View view) {
-
         this.addImageButton = (ImageView) view.findViewById(R.id.fragment_newRecipe_image_imageView);
         this.addImageButton.setOnClickListener(this);
         this.countryEt = (EditText) view.findViewById(R.id.fragmemt_newRecipe_country);
@@ -75,7 +70,12 @@ public class NewRecipeFragment extends Fragment implements View.OnClickListener 
         this.saveButton1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                delegate.onSaveButtonClick(getRepiceFromWidgets());
+                getRecipeFromWidgets(new GeneratingRecipeListener() {
+                    @Override
+                    public void onRecipeGenerated(Recipe recipe) {
+                        delegate.onSaveButtonClick(recipe);
+                    }
+                });
             }
         });
         this.cancelButton1 = (Button) view.findViewById(R.id.fragment_newRecipe_cancelBtn);
@@ -87,23 +87,51 @@ public class NewRecipeFragment extends Fragment implements View.OnClickListener 
         });
     }
 
-    private Recipe getRepiceFromWidgets() {
-        Recipe recipe = new Recipe();
-        recipe.setCountry(this.countryEt.getText().toString());
-        recipe.setDetails(this.detailsEt.getText().toString());
-//        recipe.setImgSrc(this.countryEt.getText().toString()); // TODO: 31/07/2017 handle image source
-        recipe.setName(this.nameEt.getText().toString());
-        recipe.setName(this.nameEt.getText().toString());
-        recipe.setRecipeId(String.valueOf(Calendar.getInstance().getTime()));
+    interface GeneratingRecipeListener {
+        void onRecipeGenerated(Recipe recipe);
+    }
 
-        // TODO: 31/07/2017 fix null user
-        try{
+    private void getRecipeFromWidgets(final GeneratingRecipeListener recipeListener) {
+        Log.d("NGNGNG", this.currentBitmap + "");
+        if (this.currentBitmap != null) {
+            String imageName = this.nameEt.getText().toString() + " - " + Calendar.getInstance().getTime().toString();
+            Model.getInstance().saveImage(this.currentBitmap, imageName, new SaveImageListener() {
+                @Override
+                public void fail() {
+                    Toast.makeText(getActivity(), "Image was not uploaded", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void complete(String s) {
+                    recipeListener.onRecipeGenerated(generateRecipeFromWidgets(s));
+                    Toast.makeText(getActivity(), "Image was uploaded", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            recipeListener.onRecipeGenerated(generateRecipeFromWidgets(null));
+        }
+        /*// TODO: 31/07/2017 fix null user
+        try {
             recipe.setUserId(Model.getInstance().getUser().getUserId());
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             recipe.setUserId("1234");
         }
 
+        return recipe;*/
+    }
+
+    private Recipe generateRecipeFromWidgets(String imageSrc) {
+        Recipe recipe = new Recipe();
+        Log.d("NGNGNG", "this.currentUserId=" + this.currentUserId);
+        Log.d("NGNGNG", "Model.currentUser==null?: " + (Model.getInstance().getUser() == null));
+        Log.d("NGNGNG", "Model.currentUser=: " + (Model.getInstance().getUser()));
+        recipe.setUserId(this.currentUserId);
+        recipe.setCountry(countryEt.getText().toString());
+        recipe.setDetails(detailsEt.getText().toString());
+        recipe.setImgSrc(imageSrc);
+        recipe.setName(nameEt.getText().toString());
+        recipe.setName(nameEt.getText().toString());
+        recipe.setRecipeId(String.valueOf(Calendar.getInstance().getTime()));
         return recipe;
     }
 
@@ -130,12 +158,12 @@ public class NewRecipeFragment extends Fragment implements View.OnClickListener 
                 if (items[item].equals("Take Photo")) {
                     userChoosenTask = "Take Photo";
                     //if (result)
-                        cameraIntent();
+                    cameraIntent();
 
                 } else if (items[item].equals("Choose from Library")) {
                     userChoosenTask = "Choose from Library";
                     //if (result)
-                        galleryIntent();
+                    galleryIntent();
 
                 } else if (items[item].equals("Cancel")) {
                     dialog.dismiss();
@@ -173,7 +201,7 @@ public class NewRecipeFragment extends Fragment implements View.OnClickListener 
     @SuppressWarnings("deprecation")
     private void onSelectFromGalleryResult(Intent data) {
 
-        Bitmap bm=null;
+        Bitmap bm = null;
         if (data != null) {
             try {
                 bm = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), data.getData());
@@ -183,6 +211,8 @@ public class NewRecipeFragment extends Fragment implements View.OnClickListener 
         }
 
         addImageButton.setImageBitmap(bm);
+        this.currentBitmap = bm;
+        Log.d("NGNGNG", "onSelectFromGalleryResult: this.currentBitmap = " + this.currentBitmap);
     }
 
     private void onCaptureImageResult(Intent data) {
@@ -218,7 +248,8 @@ public class NewRecipeFragment extends Fragment implements View.OnClickListener 
 //            e.printStackTrace();
 //        }
         addImageButton.setImageBitmap(thumbnail);
-
+        this.currentBitmap = thumbnail;
+        Log.d("NGNGNG", "onCaptureImageResult: this.currentBitmap = " + this.currentBitmap);
     }
 //    public Uri getImageUri(Context inContext, Bitmap inImage) {
 //        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -267,12 +298,6 @@ public class NewRecipeFragment extends Fragment implements View.OnClickListener 
 //                break;
 //        }
 //    }
-
-
-
-
-
-
 
 
 }

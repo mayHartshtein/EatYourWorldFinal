@@ -10,9 +10,11 @@ import com.example.hartshteinma.eatyourworld.model.interfaces.DownloadRecipeList
 import com.example.hartshteinma.eatyourworld.model.interfaces.EditListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.GetImageListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.ImagesLoader;
+import com.example.hartshteinma.eatyourworld.model.interfaces.LocalManager;
 import com.example.hartshteinma.eatyourworld.model.interfaces.LoginListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.RecipesListListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.RegisterListener;
+import com.example.hartshteinma.eatyourworld.model.interfaces.RemoveImageListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.RemoveListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.SaveImageListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.UploadListener;
@@ -34,7 +36,6 @@ public class Model {
     private List<Recipe> recipes;
     private RecipesListListener recipesListListener;
     private User user;
-    private String userByEmail;
 
     private Model() {
         init();
@@ -108,19 +109,24 @@ public class Model {
         return this.user;
     }
 
-    public void setUserByEmail(String email) {
+    public void setUserByEmail(String email, final DownloadListener downloadListener) {
         this.authManager.getUserByEmail(email, new DownloadListener() {
             @Override
             public void onDownloadFinished(User user) {
                 setUser(user);
+                downloadListener.onDownloadFinished(user);
             }
         });
+    }
+
+    public void removeImage(String url,RemoveImageListener listener)
+    {
+        this.imagesLoader.removeImage(url,listener);
     }
 
     public void getImage(String url, GetImageListener listener) {
         this.imagesLoader.getImage(url, listener);
     }
-
     public void saveImage(Bitmap imageBmp, String name, SaveImageListener listener) {
         this.imagesLoader.saveImage(imageBmp, name, listener);
     }

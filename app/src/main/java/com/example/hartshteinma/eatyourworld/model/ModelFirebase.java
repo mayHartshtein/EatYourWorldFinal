@@ -16,6 +16,7 @@ import com.example.hartshteinma.eatyourworld.model.interfaces.GetImageListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.ImagesLoader;
 import com.example.hartshteinma.eatyourworld.model.interfaces.LoginListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.RegisterListener;
+import com.example.hartshteinma.eatyourworld.model.interfaces.RemoveImageListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.RemoveListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.SaveImageListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.UploadListener;
@@ -122,13 +123,19 @@ public class ModelFirebase implements CloudManager, AuthManager, ImagesLoader {
     }
 
     @Override
-    public void removeRecipe(Recipe recipe, final RemoveListener removeListener) {
-        this.recipesFirebase.child(recipe.getUserId()).child(recipe.getRecipeId()).removeValue(new DatabaseReference.CompletionListener() {
+    public void removeRecipe(final Recipe recipe, final RemoveListener removeListener) {
+        recipesFirebase.child(recipe.getUserId()).child(recipe.getRecipeId()).removeValue(new DatabaseReference.CompletionListener() {
             @Override
-            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+            public void onComplete(final DatabaseError databaseError, DatabaseReference databaseReference) {
                 removeListener.onRecipeRemoved(databaseError.toException());
             }
         });
+        /*removeImage(recipe.getImgSrc(), new RemoveImageListener() {
+            @Override
+            public void removeImageFinished() {
+            }
+        });*/
+
     }
 
     @Override
@@ -221,8 +228,20 @@ public class ModelFirebase implements CloudManager, AuthManager, ImagesLoader {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(Exception exception) {
-                Log.d("TAG", exception.getMessage());
                 listener.onFail();
+            }
+        });
+    }
+
+    @Override
+    public void removeImage(String url, final RemoveImageListener listener) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        Log.d("NGNGNG", "url = " + url);
+        StorageReference httpsReference = storage.getReferenceFromUrl(url);
+        httpsReference.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                listener.removeImageFinished();
             }
         });
     }

@@ -4,8 +4,12 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.hartshteinma.eatyourworld.R;
@@ -19,12 +23,18 @@ import com.example.hartshteinma.eatyourworld.dialogs.MyProgressBar;
 import com.example.hartshteinma.eatyourworld.model.Model;
 import com.example.hartshteinma.eatyourworld.model.Recipe;
 import com.example.hartshteinma.eatyourworld.model.User;
+import com.example.hartshteinma.eatyourworld.model.interfaces.DownloadListener;
+import com.example.hartshteinma.eatyourworld.model.interfaces.GetImageListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.LoginListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.RecipesListListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.RegisterListener;
+import com.example.hartshteinma.eatyourworld.model.interfaces.RemoveListener;
+import com.example.hartshteinma.eatyourworld.model.interfaces.SaveImageListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.UploadListener;
 import com.firebase.client.Firebase;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
@@ -90,15 +100,20 @@ public class MainActivity extends Activity {
         signInFragment.setDelegate(new SignInFragment.Delegate() {
             @Override
             public void onSignInPressed(final String email, String password) {
+                signInFragment.showSpinner();
                 Model.getInstance().login(email, password, new LoginListener() {
                     @Override
                     public void onLoginFinished(boolean login) {
                         if (login) {
-                            // ADD
-
-                            Model.getInstance().setUserByEmail(email);
+                            Model.getInstance().setUserByEmail(email, new DownloadListener() {
+                                @Override
+                                public void onDownloadFinished(User user) {
+                                    newRecipeFragment.setCurrentUserId(user.getUserId());
+                                }
+                            });
                             switchToFragment(recipesListFragment);
                             recipesListFragment.refreshListView();
+                            signInFragment.hideSpinner();
                         }
                     }
                 });
@@ -107,14 +122,17 @@ public class MainActivity extends Activity {
         registerFragment.setDelegate(new RegisterFragment.Delegate() {
             @Override
             public void onRegisterButtonClick(final User user) {
+                registerFragment.showSpinner();
                 Toast.makeText(MainActivity.this, "onRegisterButtonClick", Toast.LENGTH_SHORT).show();
                 Model.getInstance().register(user, new RegisterListener() {
                     @Override
                     public void onRegisterFinished(boolean register) {
                         if (register) {
                             Model.getInstance().setUser(user);
+                            newRecipeFragment.setCurrentUserId(user.getUserId());
                             switchToFragment(recipesListFragment);
                             recipesListFragment.refreshListView();
+                            registerFragment.hideSpinner();
                         }
                     }
                 });
@@ -148,8 +166,25 @@ public class MainActivity extends Activity {
                     public void onCreateViewFinished() {
                         recipeDetailsFragment.displayRecipeDetails(recipe);
                     }
+
+                    @Override
+                    public void onDeletePressed(Recipe recipe) {
+                        Model.getInstance().removeRecipe(recipe, new RemoveListener() {
+                            @Override
+                            public void onRecipeRemoved(Exception e) {
+                                Toast.makeText(MainActivity.this, "Recipe deleted", Toast.LENGTH_SHORT).show();
+                                switchToFragment(recipesListFragment);
+                                recipesListFragment.refreshListView();
+                            }
+                        });
+                    }
                 });
                 switchToFragment(recipeDetailsFragment);
+                Toast.makeText(MainActivity.this, "Model.getInstance().getUser()==null: " + (Model.getInstance().getUser() == null), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "Model.getInstance().getUser().getUserId()==null: "+(Model.getInstance().getUser().getUserId()==null), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "recipe==null: " + (recipe == null), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "recipe.getUserId()==null: " + (recipe.getUserId() == null), Toast.LENGTH_SHORT).show();
+//                recipeDetailsFragment.setOwner(Model.getInstance().getUser().getUserId().equals(recipe.getUserId()));
                 recipeDetailsFragment.displayRecipeDetails(recipe);
             }
 

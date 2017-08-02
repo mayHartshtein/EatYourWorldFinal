@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "303155693913-g1nthbr88ipi5unmad58trds0pktlk9a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hartshteinma.eatyourworld",
+            "certificate_hash": "06a58d6939ad88701290ffc4fb2c6da2593a50a7"
+          }
+        },
+        {
+          "client_id": "303155693913-mt66364dmngev8o8cpmjrjq7qnk30c5e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hartshteinma.eatyourworld",
+            "certificate_hash": "8103d836fe44946c452b89f6a90c03103b2a6fee"
+          }
+        },
+        {
           "client_id": "303155693913-9fcnf7mebotcnliccm8ansvukl3l58e0.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

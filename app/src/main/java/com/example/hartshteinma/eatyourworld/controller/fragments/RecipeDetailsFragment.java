@@ -1,33 +1,41 @@
 package com.example.hartshteinma.eatyourworld.controller.fragments;
 
+import android.app.Fragment;
+import android.graphics.Bitmap;
 import android.icu.util.Calendar;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.hartshteinma.eatyourworld.R;
 import com.example.hartshteinma.eatyourworld.model.Model;
 import com.example.hartshteinma.eatyourworld.model.Recipe;
-
-import java.util.List;
+import com.example.hartshteinma.eatyourworld.model.interfaces.GetImageListener;
 
 public class RecipeDetailsFragment extends Fragment {
     private TextView countryTv, nameTv, detailsTv;
-    private Delegate delegate;
-    private Button deleteBtn,editBtn;
+    private Button deleteBtn;
     private ImageView recipeImg;
-  //  private Boolean isOwner;
-
+    private Delegate delegate;
+    private boolean isOwner;
+    private LinearLayout buttonsBar;
+    private ProgressBar spinner;
 
     public interface Delegate {
         void onCreateViewFinished();
-//        void onDeletePressed(Recipe recipe);
-//        void onEditPressed(Recipe recipe);
+
+        void onDeletePressed(Recipe recipe);
+    }
+
+    public void setOwner(boolean owner) {
+        this.isOwner = owner;
     }
 
     public void setDelegate(Delegate delegate) {
@@ -43,37 +51,26 @@ public class RecipeDetailsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_recipe_details, container, false);
         initWidgets(view);
-//        openScreem(this.isOwner);
         delegate.onCreateViewFinished();
         return view;
 
     }
 
-//    public void setOwner(Boolean owner) {
-//        isOwner = owner;
-//    }
-
     private void initWidgets(View view) {
+        this.spinner = (ProgressBar) view.findViewById(R.id.spinner);
         this.recipeImg = (ImageView) view.findViewById(R.id.fragment_details_Recipe_image);
         this.countryTv = (TextView) view.findViewById(R.id.fragment_recipeDetails_countryName);
         this.nameTv = (TextView) view.findViewById(R.id.fragment_recipeDetails_recipeName);
         this.detailsTv = (TextView) view.findViewById(R.id.recipe_details_textView);
-        this.deleteBtn=(Button) view.findViewById(R.id.fragment_recipeDetails_deleteBtn);
-        this.editBtn=(Button) view.findViewById(R.id.fragment_recipeDetails_editBtn);
+        this.deleteBtn = (Button) view.findViewById(R.id.fragment_recipeDetails_deleteBtn);
+        this.buttonsBar = (LinearLayout) view.findViewById(R.id.buttons_bar);
 
-
-//        this.deleteBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                delegate.onDeletePressed(getRepiceFromWidgets());
-//            }
-//        });
-//        this.editBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                delegate.onEditPressed(getRepiceFromWidgets());
-//            }
-//        });
+        this.deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                delegate.onDeletePressed(getRepiceFromWidgets());
+            }
+        });
 
     }
 
@@ -82,33 +79,40 @@ public class RecipeDetailsFragment extends Fragment {
             this.countryTv.setText(recipe.getCountry());
             this.nameTv.setText(recipe.getName());
             this.detailsTv.setText(recipe.getDetails());
-            //this.recipeImg.setIma;
+            if (recipe.getImgSrc() != null) {
+                Model.getInstance().getImage(recipe.getImgSrc(), new GetImageListener() {
+                    @Override
+                    public void onSccess(Bitmap image) {
+                        recipeImg.setImageBitmap(image);
+                        recipeImg.setVisibility(View.VISIBLE);
+                        spinner.setVisibility(View.INVISIBLE);
+                    }
+
+                    @Override
+                    public void onFail() {
+
+                    }
+                });
+            }
         }
     }
 
-    public void openScreem(boolean isOwner) {
-        if(editBtn!=null&& deleteBtn!=null)
-        {
-            if(isOwner)
-            {
-                deleteBtn.setVisibility(View.VISIBLE);
-                editBtn.setVisibility(View.VISIBLE);
-            }else
-            {
-                deleteBtn.setVisibility(View.INVISIBLE);
-                editBtn.setVisibility(View.INVISIBLE);
+    @Override
+    public void onResume() {
+        /*if (this.buttonsBar != null) {
+            if (this.isOwner) {
+                buttonsBar.setVisibility(View.VISIBLE);
+            } else {
+                buttonsBar.setVisibility(View.INVISIBLE);
             }
-
-
-        }
-
+        }*/
+        super.onResume();
     }
 
     private Recipe getRepiceFromWidgets() {
         Recipe recipe = new Recipe();
         recipe.setCountry(this.countryTv.getText().toString());
         recipe.setDetails(this.detailsTv.getText().toString());
-//        recipe.setImgSrc(this.countryEt.getText().toString()); // TODO: 31/07/2017 handle image source
         recipe.setName(this.nameTv.getText().toString());
         recipe.setRecipeId(String.valueOf(Calendar.getInstance().getTime()));
         recipe.setUserId(Model.getInstance().getUser().getUserId());

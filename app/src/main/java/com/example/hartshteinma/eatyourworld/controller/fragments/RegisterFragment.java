@@ -1,4 +1,5 @@
 package com.example.hartshteinma.eatyourworld.controller.fragments;
+
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
@@ -7,15 +8,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.hartshteinma.eatyourworld.R;
 import com.example.hartshteinma.eatyourworld.model.User;
+
 public class RegisterFragment extends Fragment {
 
     private EditText bDayEt, firstNameEt, lastNameEt, emailEt, passwordEt, userIdEt;
     private Button registerButton;
     private Delegate delegate;
+    private ProgressBar spinner;
 
     public void setDelegate(Delegate dlg) {
         this.delegate = dlg;
@@ -36,6 +40,7 @@ public class RegisterFragment extends Fragment {
     }
 
     private void initWidgets(View view) {
+        this.spinner = (ProgressBar) view.findViewById(R.id.spinner);
         this.userIdEt = (EditText) view.findViewById(R.id.fragmemt_register_userId);
         this.firstNameEt = (EditText) view.findViewById(R.id.fragmemt_register_fname);
         this.lastNameEt = (EditText) view.findViewById(R.id.fragmemt_register_lname);
@@ -69,6 +74,14 @@ public class RegisterFragment extends Fragment {
         user.setPassword(this.passwordEt.getText().toString());
         user.setUserId(this.userIdEt.getText().toString());
         return user;
+    }
+
+    public void hideSpinner() {
+        this.spinner.setVisibility(View.INVISIBLE);
+    }
+
+    public void showSpinner() {
+        this.spinner.setVisibility(View.VISIBLE);
     }
 
     public String getRegisterBtnTag() {

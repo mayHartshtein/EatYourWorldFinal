@@ -1,8 +1,10 @@
-package com.example.hartshteinma.eatyourworld.model;
+package com.example.hartshteinma.eatyourworld.model.interfaces;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.example.hartshteinma.eatyourworld.model.Recipe;
 
 import java.util.LinkedList;
 import java.util.List;

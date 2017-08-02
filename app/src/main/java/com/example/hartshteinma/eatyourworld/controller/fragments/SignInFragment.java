@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import com.example.hartshteinma.eatyourworld.R;
 import com.example.hartshteinma.eatyourworld.dialogs.MyProgressBar;
@@ -17,7 +18,7 @@ public class SignInFragment extends Fragment {
     private EditText emailEt, passwordEt;
     private Button signInButton;
     private Delegate delegate;
-    private MyProgressBar progressBar;
+    private ProgressBar spinner;
 
     public SignInFragment() {
     }
@@ -38,6 +39,7 @@ public class SignInFragment extends Fragment {
     }
 
     private void initWidgets(View view) {
+        this.spinner = (ProgressBar) view.findViewById(R.id.spinner);
         this.emailEt = (EditText) view.findViewById(R.id.fragmemt_signIn_emailEdit);
         this.passwordEt = (EditText) view.findViewById(R.id.fragmemt_signIn_passwordEdit);
         this.signInButton = (Button) view.findViewById(R.id.fragment_signIn_signInButton);
@@ -48,5 +50,13 @@ public class SignInFragment extends Fragment {
 
             }
         });
+    }
+
+    public void hideSpinner() {
+        this.spinner.setVisibility(View.INVISIBLE);
+    }
+
+    public void showSpinner() {
+        this.spinner.setVisibility(View.VISIBLE);
     }
 }
