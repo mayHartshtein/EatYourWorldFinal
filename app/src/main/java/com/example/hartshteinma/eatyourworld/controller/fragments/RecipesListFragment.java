@@ -8,26 +8,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.hartshteinma.eatyourworld.R;
-import com.example.hartshteinma.eatyourworld.controller.MainActivity;
 import com.example.hartshteinma.eatyourworld.dialogs.MyProgressBar;
 import com.example.hartshteinma.eatyourworld.model.Recipe;
-import com.example.hartshteinma.eatyourworld.model.User;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class RecipesListFragment extends Fragment {
     private ListView listView;
-    private MyProgressBar progressBar;
     private ImageButton addButton;
     private List<Recipe> recipes;
     private CustomAdapater adapater;
@@ -37,8 +30,6 @@ public class RecipesListFragment extends Fragment {
         void onItemClicked(int position, Recipe recipe);
 
         void onAddButtonClicked();
-        /*void showProgressBar();
-        void hideProgressBar();*/
     }
 
     public RecipesListFragment() {
@@ -113,7 +104,7 @@ public class RecipesListFragment extends Fragment {
             }
             TextView countryTv, recipeNameTv;
             countryTv = (TextView) convertView.findViewById(R.id.country_textView);
-            recipeNameTv = (TextView) convertView.findViewById(R.id.recipeName_textView);
+            recipeNameTv = (TextView) convertView.findViewById(R.id.recipe_name_textView);
             Recipe recipe = recipes.get(position);
             countryTv.setText(recipe.getCountry());
             recipeNameTv.setText(recipe.getName());

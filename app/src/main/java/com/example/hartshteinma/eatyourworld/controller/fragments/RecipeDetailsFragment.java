@@ -2,7 +2,6 @@ package com.example.hartshteinma.eatyourworld.controller.fragments;
 
 import android.app.Fragment;
 import android.graphics.Bitmap;
-import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,111 +11,142 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.hartshteinma.eatyourworld.R;
 import com.example.hartshteinma.eatyourworld.model.Model;
 import com.example.hartshteinma.eatyourworld.model.Recipe;
 import com.example.hartshteinma.eatyourworld.model.interfaces.GetImageListener;
 
-public class RecipeDetailsFragment extends Fragment {
-    private TextView countryTv, nameTv, detailsTv;
-    private Button deleteBtn;
+public class RecipeDetailsFragment extends Fragment
+{
+    private TextView countryTextView, nameTextView, detailsTextView;
+    private Button deleteButton, editButton;
     private ImageView recipeImg;
     private Delegate delegate;
-    private boolean isOwner;
     private LinearLayout buttonsBar;
     private ProgressBar spinner;
+    private Recipe recipe;
+    private boolean fragmentCreated;
+    private FragmentCreationListener fragmentCreationListener;
 
-    public interface Delegate {
-        void onCreateViewFinished();
-
+    public interface Delegate
+    {
         void onDeletePressed(Recipe recipe);
+        void onEditPressed(Recipe recipe, Bitmap recipeImage);
+        boolean isOwner(Recipe recipe);
     }
 
-    public void setOwner(boolean owner) {
-        this.isOwner = owner;
+    public interface FragmentCreationListener
+    {
+        void onFragmentCreated();
     }
 
-    public void setDelegate(Delegate delegate) {
+    public boolean isFragmentCreated()
+    {
+        return fragmentCreated;
+    }
+
+    public void setFragmentCreationListener(FragmentCreationListener fragmentCreationListener)
+    {
+        this.fragmentCreationListener = fragmentCreationListener;
+    }
+
+    public void setDelegate(Delegate delegate)
+    {
         this.delegate = delegate;
     }
 
-    public RecipeDetailsFragment() {
-    }
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
         View view = inflater.inflate(R.layout.fragment_recipe_details, container, false);
         initWidgets(view);
-        delegate.onCreateViewFinished();
+        if (this.fragmentCreationListener != null)
+        {
+            this.fragmentCreationListener.onFragmentCreated();
+        }
+        this.fragmentCreated = true;
         return view;
-
     }
 
-    private void initWidgets(View view) {
+    private void initWidgets(View view)
+    {
         this.spinner = (ProgressBar) view.findViewById(R.id.spinner);
-        this.recipeImg = (ImageView) view.findViewById(R.id.fragment_details_Recipe_image);
-        this.countryTv = (TextView) view.findViewById(R.id.fragment_recipeDetails_countryName);
-        this.nameTv = (TextView) view.findViewById(R.id.fragment_recipeDetails_recipeName);
-        this.detailsTv = (TextView) view.findViewById(R.id.recipe_details_textView);
-        this.deleteBtn = (Button) view.findViewById(R.id.fragment_recipeDetails_deleteBtn);
+        this.recipeImg = (ImageView) view.findViewById(R.id.recipe_imageView);
+        this.countryTextView = (TextView) view.findViewById(R.id.country_name_textView);
+        this.nameTextView = (TextView) view.findViewById(R.id.recipe_name_textView);
+        this.detailsTextView = (TextView) view.findViewById(R.id.recipe_details_textView);
         this.buttonsBar = (LinearLayout) view.findViewById(R.id.buttons_bar);
-
-        this.deleteBtn.setOnClickListener(new View.OnClickListener() {
+        this.deleteButton = (Button) view.findViewById(R.id.delete_button);
+        this.editButton = (Button) view.findViewById(R.id.edit_button);
+        this.deleteButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
-                delegate.onDeletePressed(getRepiceFromWidgets());
+            public void onClick(View view)
+            {
+                delegate.onDeletePressed(recipe);
             }
         });
-
+        this.editButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Bitmap bitmap = recipeImg != null ? recipeImg.getDrawingCache() : null;
+                delegate.onEditPressed(recipe, bitmap);
+            }
+        });
     }
 
-    public void displayRecipeDetails(Recipe recipe) {
-        if (recipe != null && this.countryTv != null) {
-            this.countryTv.setText(recipe.getCountry());
-            this.nameTv.setText(recipe.getName());
-            this.detailsTv.setText(recipe.getDetails());
-            if (recipe.getImgSrc() != null) {
-                Model.getInstance().getImage(recipe.getImgSrc(), new GetImageListener() {
-                    @Override
-                    public void onSccess(Bitmap image) {
-                        recipeImg.setImageBitmap(image);
-                        recipeImg.setVisibility(View.VISIBLE);
-                        spinner.setVisibility(View.INVISIBLE);
-                    }
+    public void displayRecipeDetails(final Recipe recipe)
+    {
+        if (recipe != null)
+        {
+            this.recipe = recipe;
+            if (this.fragmentCreated)
+            {
+                if (this.delegate.isOwner(this.recipe))
+                    buttonsBar.setVisibility(View.VISIBLE);
+                else
+                    buttonsBar.setVisibility(View.INVISIBLE);
 
-                    @Override
-                    public void onFail() {
+                this.recipeImg.setVisibility(View.INVISIBLE);
+                this.countryTextView.setText(recipe.getCountry());
+                this.nameTextView.setText(recipe.getName());
+                this.detailsTextView.setText(recipe.getDetails());
+                if (recipe.getImgSrc() != null && !recipe.getImgSrc().equals(""))
+                {
+                    this.spinner.setVisibility(View.VISIBLE);
+                    Model.getInstance().getImage(recipe.getImgSrc(), new GetImageListener()
+                    {
+                        @Override
+                        public void onSccess(Bitmap image)
+                        {
+                            recipeImg.setImageBitmap(image);
+                            recipeImg.setVisibility(View.VISIBLE);
+                            spinner.setVisibility(View.INVISIBLE);
+                        }
 
+                        @Override
+                        public void onFail()
+                        {
+
+                        }
+                    });
+                }
+                else
+                {
+                    spinner.setVisibility(View.INVISIBLE);
+                    recipeImg.setVisibility(View.VISIBLE);
+                    try
+                    {
+                        recipeImg.setImageResource(R.drawable.picfood);
                     }
-                });
+                    catch (Exception e)
+                    {
+                    }
+                }
             }
         }
     }
-
-    @Override
-    public void onResume() {
-        /*if (this.buttonsBar != null) {
-            if (this.isOwner) {
-                buttonsBar.setVisibility(View.VISIBLE);
-            } else {
-                buttonsBar.setVisibility(View.INVISIBLE);
-            }
-        }*/
-        super.onResume();
-    }
-
-    private Recipe getRepiceFromWidgets() {
-        Recipe recipe = new Recipe();
-        recipe.setCountry(this.countryTv.getText().toString());
-        recipe.setDetails(this.detailsTv.getText().toString());
-        recipe.setName(this.nameTv.getText().toString());
-        recipe.setRecipeId(String.valueOf(Calendar.getInstance().getTime()));
-        recipe.setUserId(Model.getInstance().getUser().getUserId());
-        return recipe;
-    }
-
 }

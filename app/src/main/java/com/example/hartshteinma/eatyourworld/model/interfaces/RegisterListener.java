@@ -5,5 +5,5 @@ package com.example.hartshteinma.eatyourworld.model.interfaces;
  */
 
 public interface RegisterListener {
-    void onRegisterFinished(boolean register);
+    void onRegisterFinished(boolean register, String errorMsg);
 }

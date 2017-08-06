@@ -5,5 +5,5 @@ package com.example.hartshteinma.eatyourworld.model.interfaces;
  */
 
 public interface LoginListener {
-    void onLoginFinished(boolean login);
+    void onLoginFinished(boolean login, String errorMsg);
 }

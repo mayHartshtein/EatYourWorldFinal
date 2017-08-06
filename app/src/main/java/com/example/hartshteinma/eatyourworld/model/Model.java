@@ -26,7 +26,8 @@ import java.util.List;
  * Created by hartshteinma on 26/07/2017.
  */
 
-public class Model {
+public class Model
+{
 
     final private static Model instance = new Model();
     private CloudManager cloudManager;
@@ -37,21 +38,27 @@ public class Model {
     private RecipesListListener recipesListListener;
     private User user;
 
-    private Model() {
+    private Model()
+    {
         init();
     }
 
-    private void init() {
+    // TODO: 05/08/2017 add countries loader
+    private void init()
+    {
         ModelFirebase modelFirebase = new ModelFirebase();
         this.authManager = modelFirebase;
         this.cloudManager = modelFirebase;
         this.imagesLoader = modelFirebase;
         this.recipes = new ArrayList<>();
-        this.cloudManager.getAllRecipes(new DownloadRecipeListener() {
+        this.cloudManager.getAllRecipes(new DownloadRecipeListener()
+        {
             @Override
-            public void onDownloadFinished(List<Recipe> recipes) {
+            public void onDownloadFinished(List<Recipe> recipes)
+            {
                 setRecipes(recipes);
-                if (recipesListListener != null) {
+                if (recipesListListener != null)
+                {
                     recipesListListener.datasetChanged(recipes);
                 }
             }
@@ -59,75 +66,103 @@ public class Model {
         this.user = null;
     }
 
-    public void setCloudManagerContext(Context context) {
-//        this.cloudManager = new RecipeSQL();
+    public void setModelContext(Context context)
+    {
+        this.localManager = new ModelSQL(context);
     }
 
-    private void setRecipes(List<Recipe> recipes) {
+    private void setRecipes(List<Recipe> recipes)
+    {
         this.recipes.clear();
         this.recipes.addAll(recipes);
     }
 
-    public static Model getInstance() {
+    public static Model getInstance()
+    {
         return instance;
     }
 
-    public void addRecipe(Recipe recipe, UploadListener uploadListener) {
+    public void addRecipe(Recipe recipe, UploadListener uploadListener)
+    {
         this.cloudManager.addRecipe(recipe, uploadListener);
     }
 
-    public void login(String email, String password, LoginListener loginListener) {
+    public void login(String email, String password, LoginListener loginListener)
+    {
         this.authManager.login(email, password, loginListener);
     }
 
-    public void register(User user, RegisterListener registerListener) {
+    public void register(User user, RegisterListener registerListener)
+    {
         this.authManager.register(user, registerListener);
     }
 
-    public void removeRecipe(Recipe recipe, RemoveListener removeListener) {
+    public void removeRecipe(Recipe recipe, RemoveListener removeListener)
+    {
         this.cloudManager.removeRecipe(recipe, removeListener);
     }
 
-    public void editRecipe(Recipe recipe, EditListener editListener) {
+    public void editRecipe(Recipe recipe, EditListener editListener)
+    {
         this.cloudManager.editRecipe(recipe, editListener);
     }
 
-    public List<Recipe> getRecipes() {
+    public List<Recipe> getRecipes()
+    {
         return this.recipes;
     }
 
-    public void setRecipesListListener(RecipesListListener recipesListListener) {
+    public void setRecipesListListener(RecipesListListener recipesListListener)
+    {
         this.recipesListListener = recipesListListener;
     }
 
-    public void setUser(User user) {
-        // TODO: 31/07/2017 update user after signing in
+    public void setUser(User user)
+    {
         this.user = user;
+        this.localManager.setUser(user);
     }
 
-    public User getUser() {
+    public User getUser()
+    {
         return this.user;
     }
 
-    public void setUserByEmail(String email, final DownloadListener downloadListener) {
-        this.authManager.getUserByEmail(email, new DownloadListener() {
+    public void setUserByEmail(String email, final DownloadListener downloadListener)
+    {
+        this.authManager.getUserByEmail(email, new DownloadListener()
+        {
             @Override
-            public void onDownloadFinished(User user) {
+            public void onDownloadFinished(User user)
+            {
                 setUser(user);
                 downloadListener.onDownloadFinished(user);
             }
         });
     }
 
-    public void removeImage(String url,RemoveImageListener listener)
+    public void removeImage(String url, RemoveImageListener listener)
     {
-        this.imagesLoader.removeImage(url,listener);
+        this.imagesLoader.removeImage(url, listener);
     }
 
-    public void getImage(String url, GetImageListener listener) {
+    public void getImage(String url, GetImageListener listener)
+    {
         this.imagesLoader.getImage(url, listener);
     }
-    public void saveImage(Bitmap imageBmp, String name, SaveImageListener listener) {
+
+    public void saveImage(Bitmap imageBmp, String name, SaveImageListener listener)
+    {
         this.imagesLoader.saveImage(imageBmp, name, listener);
+    }
+
+    public void dropTable()
+    {
+        this.localManager.dropTable();
+    }
+
+    public User getCurrentUser()
+    {
+        return this.localManager.getCurrentUser();
     }
 }

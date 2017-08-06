@@ -1,9 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.example.hartshteinma.eatyourworld.controller.fragments.NewRecipeFragment">
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                tools:context="com.example.hartshteinma.eatyourworld.controller.fragments.NewRecipeFragment">
 
     <TextView
         android:id="@+id/textView"
@@ -16,7 +16,7 @@
         android:text="New Recipe"
         android:textAlignment="center"
         android:textSize="50dp"
-        android:textStyle="bold" />
+        android:textStyle="bold"/>
 
     <LinearLayout
         android:id="@+id/buttons_bar"
@@ -26,83 +26,77 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/fragment_newRecipe_cancelBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="sans-serif-smallcaps"
-            android:text="cancel"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/fragment_newRecipe_saveBtn"
+            android:id="@+id/save_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:fontFamily="sans-serif-smallcaps"
             android:text="save"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-smallcaps"
+            android:text="cancel"
+            android:textStyle="bold"/>
+
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/fragment_newRecipe_image_imageView"
+        android:id="@+id/recipe_imageView"
         android:layout_width="90dp"
         android:layout_height="80dp"
-        android:layout_alignParentEnd="true"
         android:layout_below="@id/textView"
-        android:layout_marginEnd="48dp"
-        android:layout_marginLeft="250dp"
-        android:layout_weight="3"
-        android:src="@drawable/picfood" />
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/picfood"/>
 
     <TableLayout
         android:id="@+id/table_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_below="@id/fragment_newRecipe_image_imageView"
-        android:paddingLeft="30dp"
-        android:paddingRight="30dp">
+        android:layout_below="@id/recipe_imageView">
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Country:"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
 
             <EditText
-                android:id="@+id/fragmemt_newRecipe_country"
+                android:id="@+id/country_name_editText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="Enter country"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"/>
 
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Recipe Name:"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
 
             <EditText
-                android:id="@+id/fragmemt_newRecipe_recipeName"
+                android:id="@+id/recipe_name_editText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="Enter recipe Name"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"/>
 
         </TableRow>
 
@@ -112,15 +106,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/buttons_bar"
-        android:layout_alignParentStart="true"
         android:layout_below="@id/table_layout">
 
         <EditText
-            android:id="@+id/fragmemt_newRecipe_recipeDetail"
+            android:id="@+id/recipe_details_editText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Enter recipe details"
-            android:inputType="textMultiLine" />
+            android:inputType="textMultiLine"/>
     </ScrollView>
 
 </RelativeLayout>

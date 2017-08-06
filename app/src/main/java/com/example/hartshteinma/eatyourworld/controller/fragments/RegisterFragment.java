@@ -8,8 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.example.hartshteinma.eatyourworld.R;
 import com.example.hartshteinma.eatyourworld.model.User;
@@ -19,7 +17,6 @@ public class RegisterFragment extends Fragment {
     private EditText bDayEt, firstNameEt, lastNameEt, emailEt, passwordEt, userIdEt;
     private Button registerButton;
     private Delegate delegate;
-    private ProgressBar spinner;
 
     public void setDelegate(Delegate dlg) {
         this.delegate = dlg;
@@ -40,21 +37,19 @@ public class RegisterFragment extends Fragment {
     }
 
     private void initWidgets(View view) {
-        this.spinner = (ProgressBar) view.findViewById(R.id.spinner);
-        this.userIdEt = (EditText) view.findViewById(R.id.fragmemt_register_userId);
-        this.firstNameEt = (EditText) view.findViewById(R.id.fragmemt_register_fname);
-        this.lastNameEt = (EditText) view.findViewById(R.id.fragmemt_register_lname);
-        this.emailEt = (EditText) view.findViewById(R.id.fragmemt_register_Email);
-        this.passwordEt = (EditText) view.findViewById(R.id.fragmemt_register_Password);
+        this.userIdEt = (EditText) view.findViewById(R.id.user_id_editText);
+        this.firstNameEt = (EditText) view.findViewById(R.id.first_name_editText);
+        this.lastNameEt = (EditText) view.findViewById(R.id.last_name_editText);
+        this.emailEt = (EditText) view.findViewById(R.id.email_editText);
+        this.passwordEt = (EditText) view.findViewById(R.id.password_editText);
         this.registerButton = (Button) view.findViewById(R.id.fragment_register_btn);
         this.registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "REGISTER-BUTTON", Toast.LENGTH_SHORT).show();
                 delegate.onRegisterButtonClick(getUserFromWidgets());
             }
         });
-        this.bDayEt = (EditText) view.findViewById(R.id.fragment_register_Birthday);
+        this.bDayEt = (EditText) view.findViewById(R.id.birthday_editText);
         this.bDayEt.setInputType(0);
         this.bDayEt.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -67,21 +62,13 @@ public class RegisterFragment extends Fragment {
 
     private User getUserFromWidgets() {
         User user = new User();
-        user.setCountry(this.bDayEt.getText().toString());
+        user.setBirthday(this.bDayEt.getText().toString());
         user.setEmail(this.emailEt.getText().toString());
         user.setFirstName(this.firstNameEt.getText().toString());
         user.setLastName(this.lastNameEt.getText().toString());
         user.setPassword(this.passwordEt.getText().toString());
         user.setUserId(this.userIdEt.getText().toString());
         return user;
-    }
-
-    public void hideSpinner() {
-        this.spinner.setVisibility(View.INVISIBLE);
-    }
-
-    public void showSpinner() {
-        this.spinner.setVisibility(View.VISIBLE);
     }
 
     public String getRegisterBtnTag() {

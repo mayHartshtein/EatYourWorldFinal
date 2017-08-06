@@ -7,5 +7,5 @@ import com.google.firebase.database.DatabaseError;
  */
 
 public interface UploadListener {
-    void onRecipeAdded(DatabaseError e);
+    void onRecipeAdded(boolean success, String errorMsg);
 }

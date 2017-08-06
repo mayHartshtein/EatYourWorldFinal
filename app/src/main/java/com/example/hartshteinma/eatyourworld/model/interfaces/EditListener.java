@@ -5,5 +5,5 @@ package com.example.hartshteinma.eatyourworld.model.interfaces;
  */
 
 public interface EditListener {
-    void onEditFinished(Exception e);
+    void onEditFinished(boolean success, String errorMsg);
 }

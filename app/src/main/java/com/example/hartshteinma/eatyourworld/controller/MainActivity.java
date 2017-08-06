@@ -2,237 +2,459 @@ package com.example.hartshteinma.eatyourworld.controller;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.ImageView;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.hartshteinma.eatyourworld.R;
+import com.example.hartshteinma.eatyourworld.controller.fragments.EditRecipeFragment;
 import com.example.hartshteinma.eatyourworld.controller.fragments.MainFragment;
 import com.example.hartshteinma.eatyourworld.controller.fragments.NewRecipeFragment;
 import com.example.hartshteinma.eatyourworld.controller.fragments.RecipeDetailsFragment;
 import com.example.hartshteinma.eatyourworld.controller.fragments.RecipesListFragment;
 import com.example.hartshteinma.eatyourworld.controller.fragments.RegisterFragment;
 import com.example.hartshteinma.eatyourworld.controller.fragments.SignInFragment;
-import com.example.hartshteinma.eatyourworld.dialogs.MyProgressBar;
 import com.example.hartshteinma.eatyourworld.model.Model;
+import com.example.hartshteinma.eatyourworld.model.ModelSQL;
 import com.example.hartshteinma.eatyourworld.model.Recipe;
 import com.example.hartshteinma.eatyourworld.model.User;
 import com.example.hartshteinma.eatyourworld.model.interfaces.DownloadListener;
-import com.example.hartshteinma.eatyourworld.model.interfaces.GetImageListener;
+import com.example.hartshteinma.eatyourworld.model.interfaces.EditListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.LoginListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.RecipesListListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.RegisterListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.RemoveListener;
-import com.example.hartshteinma.eatyourworld.model.interfaces.SaveImageListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.UploadListener;
 import com.firebase.client.Firebase;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity {
-
-    private FragmentTransaction ftr;
+public class MainActivity extends Activity
+{
     private MainFragment mainFragment;
     private SignInFragment signInFragment;
-    private MyProgressBar progressBar;
     private RegisterFragment registerFragment;
     private RecipesListFragment recipesListFragment;
     private NewRecipeFragment newRecipeFragment;
     private RecipeDetailsFragment recipeDetailsFragment;
+    private EditRecipeFragment editRecipeFragment;
+    private List<Fragment> allFragments;
+    private ProgressBar spinner;
 
+    // TODO: 05/08/2017 add date picker
+    // TODO: 05/08/2017 remove all logs and toast
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Firebase.setAndroidContext(MainActivity.this);
+        initWidgets();
         initFragments();
         initActionBar();
+        updateMainFragmentByCurrentUser();
     }
 
-    private void initActionBar() {
+    private void updateMainFragmentByCurrentUser()
+    {
+        User currentUser = Model.getInstance().getCurrentUser();
+        if (currentUser != null)
+        {
+            Model.getInstance().setUser(currentUser);
+            switchToFragment(recipesListFragment);
+            recipesListFragment.refreshListView();
+            newRecipeFragment.setCurrentUserId(currentUser.getUserId());
+        }
+    }
+
+    private void initWidgets()
+    {
+        this.spinner = (ProgressBar) findViewById(R.id.spinner);
+        Model.getInstance().setModelContext(this);
+    }
+
+    private void initActionBar()
+    {
         ActionBar actionBar = getActionBar();
-        if (actionBar != null) {
+        if (actionBar != null)
+        {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
 
-    private void initFragments() {
-        mainFragment = new MainFragment();
-        signInFragment = new SignInFragment();
-        registerFragment = new RegisterFragment();
-        recipesListFragment = new RecipesListFragment();
-        newRecipeFragment = new NewRecipeFragment();
-        recipeDetailsFragment = new RecipeDetailsFragment();
+    private void initFragments()
+    {
+        this.allFragments = new ArrayList<>();
+        this.mainFragment = new MainFragment();
+        this.allFragments.add(this.mainFragment);
+        this.signInFragment = new SignInFragment();
+        this.allFragments.add(this.signInFragment);
+        this.registerFragment = new RegisterFragment();
+        this.allFragments.add(this.registerFragment);
+        this.recipesListFragment = new RecipesListFragment();
+        this.allFragments.add(this.recipesListFragment);
+        this.newRecipeFragment = new NewRecipeFragment();
+        this.allFragments.add(this.newRecipeFragment);
+        this.recipeDetailsFragment = new RecipeDetailsFragment();
+        this.allFragments.add(this.recipeDetailsFragment);
+        this.editRecipeFragment = new EditRecipeFragment();
+        this.allFragments.add(this.editRecipeFragment);
+        addAllFragments();
         initFragmentsListeners();
-
-        ftr = getFragmentManager().beginTransaction();
-
-        ftr.add(R.id.main_container, mainFragment);
-
-        ftr.show(mainFragment);
-        ftr.commit();
-
-
+        switchToFragment(mainFragment);
     }
 
-    private void initFragmentsListeners() {
-        mainFragment.setDelegate(new MainFragment.Delegate() {
-            @Override
-            public void onSignInPressed() {
-                switchToFragment(signInFragment);
-            }
+    private void addAllFragments()
+    {
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        for (Fragment fragment : this.allFragments)
+        {
+            transaction.add(R.id.main_container, fragment);
+        }
+        transaction.commit();
+    }
 
-            @Override
-            public void onRegisterPressed() {
-                switchToFragment(registerFragment);
-            }
+    private void initFragmentsListeners()
+    {
+        initMainFragmentDelegate();
+        initSignInFragmentDelegate();
+        initRegisterFragmentDelegate();
+        initNewRecipeFragmentDelegate();
+        initRecipeDetailsFragmentDelegate();
+        initRecipesListFragmentDelegate();
+        initEditRecipeFragmentDelegate();
+    }
 
-        });
-        signInFragment.setDelegate(new SignInFragment.Delegate() {
+    private void initEditRecipeFragmentDelegate()
+    {
+        editRecipeFragment.setDelegate(new NewRecipeFragment.Delegate()
+        {
             @Override
-            public void onSignInPressed(final String email, String password) {
-                signInFragment.showSpinner();
-                Model.getInstance().login(email, password, new LoginListener() {
+            public void onSaveButtonClick(final Recipe recipe)
+            {
+                showSpinner();
+                Model.getInstance().editRecipe(recipe, new EditListener()
+                {
                     @Override
-                    public void onLoginFinished(boolean login) {
-                        if (login) {
-                            Model.getInstance().setUserByEmail(email, new DownloadListener() {
-                                @Override
-                                public void onDownloadFinished(User user) {
-                                    newRecipeFragment.setCurrentUserId(user.getUserId());
-                                }
-                            });
+                    public void onEditFinished(boolean success, String errorMsg)
+                    {
+                        if (success)
+                        {
+                            Toast.makeText(MainActivity.this, "Changes saved", Toast.LENGTH_SHORT).show();
+                            hideSpinner();
+                            switchToFragment(recipeDetailsFragment);
+                            recipeDetailsFragment.displayRecipeDetails(recipe);
+                        }
+                        else
+                            Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelButtonClick()
+            {
+                Toast.makeText(MainActivity.this, "Edit canceled", Toast.LENGTH_SHORT).show();
+                switchToFragment(recipeDetailsFragment);
+            }
+        });
+    }
+
+    private void initRecipesListFragmentDelegate()
+    {
+        recipesListFragment.setDelegate(new RecipesListFragment.Delegate()
+        {
+            @Override
+            public void onItemClicked(int position, final Recipe recipe)
+            {
+                switchToFragment(recipeDetailsFragment);
+                if (recipeDetailsFragment.isFragmentCreated())
+                    recipeDetailsFragment.displayRecipeDetails(recipe);
+                else
+                {
+                    showSpinner();
+                    recipeDetailsFragment.setFragmentCreationListener(new RecipeDetailsFragment.FragmentCreationListener()
+                    {
+                        @Override
+                        public void onFragmentCreated()
+                        {
+                            recipeDetailsFragment.displayRecipeDetails(recipe);
+                            hideSpinner();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onAddButtonClicked()
+            {
+                switchToFragment(newRecipeFragment);
+                newRecipeFragment.clearScreen();
+            }
+        });
+        recipesListFragment.setRecipes(Model.getInstance().getRecipes());
+        Model.getInstance().setRecipesListListener(new RecipesListListener()
+        {
+            @Override
+            public void datasetChanged(List<Recipe> recipes)
+            {
+                recipesListFragment.refreshListView();
+            }
+        });
+    }
+
+    private void initRecipeDetailsFragmentDelegate()
+    {
+        recipeDetailsFragment.setDelegate(new RecipeDetailsFragment.Delegate()
+        {
+            @Override
+            public void onDeletePressed(final Recipe recipe)
+            {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Are you sure you want to remove " + recipe.getName() + " recipe?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                Model.getInstance().removeRecipe(recipe, new RemoveListener()
+                                {
+                                    @Override
+                                    public void onRecipeRemoved(boolean success, String errorMsg)
+                                    {
+                                        if (success)
+                                        {
+                                            Toast.makeText(MainActivity.this, "Recipe deleted", Toast.LENGTH_SHORT).show();
+                                            switchToFragment(recipesListFragment);
+                                            recipesListFragment.refreshListView();
+                                        }
+                                        else
+                                            Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                            }
+                        }).setNegativeButton("No", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        Toast.makeText(MainActivity.this, "Recipe " + recipe.getName() + " will not be removed", Toast.LENGTH_SHORT).show();
+                    }
+                }).create().show();
+            }
+
+            @Override
+            public void onEditPressed(Recipe recipe, Bitmap recipeImage)
+            {
+                switchToFragment(editRecipeFragment);
+                editRecipeFragment.displayRecipeEdit(recipe, recipeImage);
+            }
+
+            @Override
+            public boolean isOwner(Recipe recipe)
+            {
+                User currentUser = Model.getInstance().getUser();
+                if (currentUser == null || currentUser.getUserId() == null || recipe == null)
+                    return false;
+                return currentUser.getUserId().equals(recipe.getUserId());
+            }
+        });
+    }
+
+    private void initNewRecipeFragmentDelegate()
+    {
+        newRecipeFragment.setDelegate(new NewRecipeFragment.Delegate()
+        {
+            @Override
+            public void onSaveButtonClick(Recipe recipe)
+            {
+                Model.getInstance().addRecipe(recipe, new UploadListener()
+                {
+                    @Override
+                    public void onRecipeAdded(boolean success, String errorMsg)
+                    {
+                        if (success)
+                        {
+                            Toast.makeText(MainActivity.this, "Recipe added", Toast.LENGTH_SHORT).show();
                             switchToFragment(recipesListFragment);
                             recipesListFragment.refreshListView();
-                            signInFragment.hideSpinner();
                         }
-                    }
-                });
-            }
-        });
-        registerFragment.setDelegate(new RegisterFragment.Delegate() {
-            @Override
-            public void onRegisterButtonClick(final User user) {
-                registerFragment.showSpinner();
-                Toast.makeText(MainActivity.this, "onRegisterButtonClick", Toast.LENGTH_SHORT).show();
-                Model.getInstance().register(user, new RegisterListener() {
-                    @Override
-                    public void onRegisterFinished(boolean register) {
-                        if (register) {
-                            Model.getInstance().setUser(user);
-                            newRecipeFragment.setCurrentUserId(user.getUserId());
-                            switchToFragment(recipesListFragment);
-                            recipesListFragment.refreshListView();
-                            registerFragment.hideSpinner();
-                        }
-                    }
-                });
-            }
-        });
-        newRecipeFragment.setDelegate(new NewRecipeFragment.Delegate() {
-            @Override
-            public void onSaveButtonClick(Recipe recipe) {
-                Model.getInstance().addRecipe(recipe, new UploadListener() {
-                    @Override
-                    public void onRecipeAdded(DatabaseError e) {
-                        Toast.makeText(MainActivity.this, "Recipe added", Toast.LENGTH_SHORT).show();
-                        switchToFragment(recipesListFragment);
-                        recipesListFragment.refreshListView();
+                        else
+                            Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
                     }
                 });
             }
 
             @Override
-            public void onCancelButtonClick() {
+            public void onCancelButtonClick()
+            {
                 switchToFragment(recipesListFragment);
                 recipesListFragment.refreshListView();
             }
         });
-        recipesListFragment.setDelegate(new RecipesListFragment.Delegate() {
+    }
 
+    private void initRegisterFragmentDelegate()
+    {
+        registerFragment.setDelegate(new RegisterFragment.Delegate()
+        {
             @Override
-            public void onItemClicked(int position, final Recipe recipe) {
-                recipeDetailsFragment.setDelegate(new RecipeDetailsFragment.Delegate() {
+            public void onRegisterButtonClick(final User user)
+            {
+                showSpinner();
+                Model.getInstance().register(user, new RegisterListener()
+                {
                     @Override
-                    public void onCreateViewFinished() {
-                        recipeDetailsFragment.displayRecipeDetails(recipe);
-                    }
-
-                    @Override
-                    public void onDeletePressed(Recipe recipe) {
-                        Model.getInstance().removeRecipe(recipe, new RemoveListener() {
-                            @Override
-                            public void onRecipeRemoved(Exception e) {
-                                Toast.makeText(MainActivity.this, "Recipe deleted", Toast.LENGTH_SHORT).show();
-                                switchToFragment(recipesListFragment);
-                                recipesListFragment.refreshListView();
-                            }
-                        });
+                    public void onRegisterFinished(boolean register, String errorMsg)
+                    {
+                        if (register)
+                        {
+                            Model.getInstance().setUser(user);
+                            newRecipeFragment.setCurrentUserId(user.getUserId());
+                            switchToFragment(recipesListFragment);
+                            recipesListFragment.refreshListView();
+                            Model.getInstance().setUser(user);
+                        }
+                        else
+                            Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
+                        hideSpinner();
                     }
                 });
-                switchToFragment(recipeDetailsFragment);
-                Toast.makeText(MainActivity.this, "Model.getInstance().getUser()==null: " + (Model.getInstance().getUser() == null), Toast.LENGTH_SHORT).show();
-//                Toast.makeText(MainActivity.this, "Model.getInstance().getUser().getUserId()==null: "+(Model.getInstance().getUser().getUserId()==null), Toast.LENGTH_SHORT).show();
-                Toast.makeText(MainActivity.this, "recipe==null: " + (recipe == null), Toast.LENGTH_SHORT).show();
-                Toast.makeText(MainActivity.this, "recipe.getUserId()==null: " + (recipe.getUserId() == null), Toast.LENGTH_SHORT).show();
-//                recipeDetailsFragment.setOwner(Model.getInstance().getUser().getUserId().equals(recipe.getUserId()));
-                recipeDetailsFragment.displayRecipeDetails(recipe);
-            }
-
-            @Override
-            public void onAddButtonClicked() {
-                switchToFragment(newRecipeFragment);
-            }
-        });
-        recipesListFragment.setRecipes(Model.getInstance().getRecipes());
-        Model.getInstance().setRecipesListListener(new RecipesListListener() {
-            @Override
-            public void datasetChanged(List<Recipe> recipes) {
-                recipesListFragment.refreshListView();
             }
         });
     }
 
-    private void switchToFragment(Fragment fragment) {
-        ftr = getFragmentManager().beginTransaction();
-        ftr.replace(R.id.main_container, fragment);
-        ftr.commit();
+    private void initSignInFragmentDelegate()
+    {
+        signInFragment.setDelegate(new SignInFragment.Delegate()
+        {
+            @Override
+            public void onSignInPressed(final String email, String password)
+            {
+                showSpinner();
+                Model.getInstance().login(email, password, new LoginListener()
+                {
+                    @Override
+                    public void onLoginFinished(boolean login, String errorMsg)
+                    {
+                        if (login)
+                        {
+                            Model.getInstance().setUserByEmail(email, new DownloadListener()
+                            {
+                                @Override
+                                public void onDownloadFinished(User user)
+                                {
+                                    newRecipeFragment.setCurrentUserId(user.getUserId());
+                                    Model.getInstance().setUser(user);
+                                }
+                            });
+                            switchToFragment(recipesListFragment);
+                            recipesListFragment.refreshListView();
+                        }
+                        else
+                            Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
+                        hideSpinner();
+                    }
+                });
+            }
+        });
     }
 
-    private void backButton() {
-        if (mainFragment.isVisible()) {
+    private void initMainFragmentDelegate()
+    {
+        mainFragment.setDelegate(new MainFragment.Delegate()
+        {
+            @Override
+            public void onSignInPressed()
+            {
+                switchToFragment(signInFragment);
+            }
+
+            @Override
+            public void onRegisterPressed()
+            {
+                switchToFragment(registerFragment);
+            }
+
+        });
+    }
+
+    private void hideSpinner()
+    {
+        this.spinner.setVisibility(View.INVISIBLE);
+    }
+
+    private void showSpinner()
+    {
+        this.spinner.setVisibility(View.VISIBLE);
+    }
+
+    private void switchToFragment(Fragment fragment)
+    {
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        for (Fragment frag : this.allFragments)
+        {
+            transaction.hide(frag);
+        }
+        transaction.show(fragment);
+        transaction.commit();
+    }
+
+    private void backButton()
+    {
+        if (mainFragment.isVisible())
+        {
             super.onBackPressed();
-        } else if (newRecipeFragment.isVisible()) {
+        }
+        else if (newRecipeFragment.isVisible())
+        {
             switchToFragment(recipesListFragment);
-        } else if (recipeDetailsFragment.isVisible()) {
+        }
+        else if (recipeDetailsFragment.isVisible())
+        {
             switchToFragment(recipesListFragment);
-        } else if (recipesListFragment.isVisible()) {
+        }
+        else if (recipesListFragment.isVisible())
+        {
             switchToFragment(mainFragment);
-        } else if (registerFragment.isVisible()) {
+        }
+        else if (registerFragment.isVisible())
+        {
             switchToFragment(mainFragment);
-        } else if (signInFragment.isVisible()) {
+        }
+        else if (signInFragment.isVisible())
+        {
             switchToFragment(mainFragment);
+        }
+        else if (editRecipeFragment.isVisible())
+        {
+            switchToFragment(recipeDetailsFragment);
         }
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed()
+    {
         backButton();
         super.onBackPressed();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
             case android.R.id.home:
                 backButton();
                 return true;

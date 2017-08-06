@@ -5,5 +5,5 @@ package com.example.hartshteinma.eatyourworld.model.interfaces;
  */
 
 public interface RemoveListener {
-    void onRecipeRemoved(Exception e);
+    void onRecipeRemoved(boolean success, String errorMsg);
 }

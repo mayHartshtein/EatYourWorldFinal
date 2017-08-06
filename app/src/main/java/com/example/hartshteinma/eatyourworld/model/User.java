@@ -6,18 +6,18 @@ package com.example.hartshteinma.eatyourworld.model;
 
 public class User {
 
-    private String userId, firstName, lastName, country, email, password;
+    private String userId, firstName, lastName, birthday, email, password;
 
     public User() {
 
     }
 
-    public User(String userId, String firstName, String lastName, String country, String email, String password) {
+    public User(String userId, String firstName, String lastName, String birthday, String email, String password) {
 
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.country = country;
+        this.birthday = birthday;
         this.email = email;
         this.password = password;
     }
@@ -46,12 +46,12 @@ public class User {
         this.lastName = lastName;
     }
 
-    public String getCountry() {
-        return country;
+    public String getBirthday() {
+        return birthday;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
     }
 
     public String getEmail() {
@@ -76,7 +76,7 @@ public class User {
                 "userId='" + userId + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", country='" + country + '\'' +
+                ", birthday='" + birthday + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 '}';

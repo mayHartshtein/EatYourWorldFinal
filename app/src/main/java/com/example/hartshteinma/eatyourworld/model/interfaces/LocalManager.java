@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.hartshteinma.eatyourworld.model.Recipe;
+import com.example.hartshteinma.eatyourworld.model.User;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -13,15 +14,10 @@ import java.util.List;
  * Created by zegu23 on 02/08/2017.
  */
 
-public interface LocalManager {
-    List<Recipe> getAllRecipe(SQLiteDatabase db);
-
-    void addRecipe(SQLiteDatabase db, Recipe recipe);
-
-    Recipe getRecipe(SQLiteDatabase db, String recipeId);
-
-    public void onCreate(SQLiteDatabase db);
-
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion);
-
+public interface LocalManager
+{
+    public void setUser(User user);
+    public User getUserById(String id);
+    public void dropTable();
+    public User getCurrentUser();
 }

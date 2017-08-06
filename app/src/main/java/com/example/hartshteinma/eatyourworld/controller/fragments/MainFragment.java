@@ -10,7 +10,7 @@ import android.widget.Button;
 import com.example.hartshteinma.eatyourworld.R;
 
 public class MainFragment extends Fragment {
-    private Button signInBtn, registerBtn;
+    private Button signInButton, registerButton;
     private Delegate delegate;
 
     public MainFragment() {
@@ -35,15 +35,15 @@ public class MainFragment extends Fragment {
     }
 
     private void initWidgets(View view) {
-        this.signInBtn = (Button) view.findViewById(R.id.fragment_main_signInButton);
-        this.registerBtn = (Button) view.findViewById(R.id.fragment_main_registerButton);
-        this.signInBtn.setOnClickListener(new View.OnClickListener() {
+        this.signInButton = (Button) view.findViewById(R.id.sign_in_button);
+        this.registerButton = (Button) view.findViewById(R.id.register_button);
+        this.signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 delegate.onSignInPressed();
             }
         });
-        this.registerBtn.setOnClickListener(new View.OnClickListener() {
+        this.registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 delegate.onRegisterPressed();
