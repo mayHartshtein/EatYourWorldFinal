@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -27,7 +29,9 @@ import java.util.Calendar;
 
 public class NewRecipeFragment extends Fragment implements View.OnClickListener
 {
-    private EditText countryEditText, nameEditText, detailsEditText;
+    private AutoCompleteTextView countrySpinner;
+    private EditText nameEditText;
+    private EditText detailsEditText;
     private Button saveButton, cancelButton;
     private ImageView addImageButton;
     private Delegate delegate;
@@ -68,8 +72,15 @@ public class NewRecipeFragment extends Fragment implements View.OnClickListener
     {
         this.addImageButton = (ImageView) view.findViewById(R.id.recipe_imageView);
         this.addImageButton.setOnClickListener(this);
-        this.countryEditText = (EditText) view.findViewById(R.id.country_name_editText);
+
+        this.countrySpinner = (AutoCompleteTextView) view.findViewById(R.id.country_name_spinner);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_spinner_dropdown_item,
+                getActivity().getResources().getStringArray(R.array.countries));
+        this.countrySpinner.setAdapter(adapter);
+
         this.nameEditText = (EditText) view.findViewById(R.id.recipe_name_editText);
+
         this.detailsEditText = (EditText) view.findViewById(R.id.recipe_details_editText);
 
         this.saveButton = (Button) view.findViewById(R.id.save_button);
@@ -88,6 +99,7 @@ public class NewRecipeFragment extends Fragment implements View.OnClickListener
                 });
             }
         });
+
         this.cancelButton = (Button) view.findViewById(R.id.cancel_button);
         this.cancelButton.setOnClickListener(new View.OnClickListener()
         {
@@ -135,7 +147,7 @@ public class NewRecipeFragment extends Fragment implements View.OnClickListener
     {
         try
         {
-            countryEditText.setText("");
+            countrySpinner.setSelection(0);
             nameEditText.setText("");
             detailsEditText.setText("");
             addImageButton.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.picfood));
@@ -149,7 +161,7 @@ public class NewRecipeFragment extends Fragment implements View.OnClickListener
     {
         Recipe recipe = new Recipe();
         recipe.setUserId(this.currentUserId);
-        recipe.setCountry(countryEditText.getText().toString());
+        recipe.setCountry(countrySpinner.getText().toString());
         recipe.setDetails(detailsEditText.getText().toString());
         recipe.setImgSrc(imageSrc);
         recipe.setName(nameEditText.getText().toString());
@@ -184,14 +196,12 @@ public class NewRecipeFragment extends Fragment implements View.OnClickListener
                 if (items[item].equals("Take Photo"))
                 {
                     userChoosenTask = "Take Photo";
-                    //if (result)
                     cameraIntent();
 
                 }
                 else if (items[item].equals("Choose from Library"))
                 {
                     userChoosenTask = "Choose from Library";
-                    //if (result)
                     galleryIntent();
 
                 }
@@ -214,7 +224,7 @@ public class NewRecipeFragment extends Fragment implements View.OnClickListener
     {
         Intent intent = new Intent();
         intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);//
+        intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select File"), R.integer.select_file);
     }
 
@@ -257,39 +267,8 @@ public class NewRecipeFragment extends Fragment implements View.OnClickListener
     private void onCaptureImageResult(Intent data)
     {
         Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-
-        //Uri tempUri = getImageUri(getActivity(), thumbnail);
-//        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-//        if (thumbnail != null) {
-//            thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
-//        }
-//
-//
-//        File destination = new File(Environment.getExternalStorageDirectory(),
-//                          System.currentTimeMillis() + ".jpg");
-//
-//        FileOutputStream fo;
-//        try {
-//            destination.createNewFile();
-//            fo = new FileOutputStream(destination);
-//            fo.write(bytes.toByteArray());
-//            fo.close();
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-//        Bitmap rotatedThumbnail=null;
-//
-//        try {
-//            rotatedThumbnail=rotateImageIfRequired(thumbnail,tempUri);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
         addImageButton.setImageBitmap(thumbnail);
         this.currentBitmap = thumbnail;
-        Log.d("NGNGNG", "onCaptureImageResult: this.currentBitmap = " + this.currentBitmap);
     }
 
 

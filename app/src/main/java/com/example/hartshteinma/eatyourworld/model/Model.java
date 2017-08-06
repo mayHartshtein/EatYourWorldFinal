@@ -42,7 +42,6 @@ public class Model
         init();
     }
 
-    // TODO: 05/08/2017 add countries loader
     private void init()
     {
         ModelFirebase modelFirebase = new ModelFirebase();

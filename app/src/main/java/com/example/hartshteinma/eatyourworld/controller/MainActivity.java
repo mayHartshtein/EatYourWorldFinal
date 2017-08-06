@@ -33,6 +33,7 @@ import com.example.hartshteinma.eatyourworld.model.interfaces.RemoveRecipeListen
 import com.example.hartshteinma.eatyourworld.model.interfaces.UploadListener;
 import com.firebase.client.Firebase;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,8 +49,6 @@ public class MainActivity extends Activity
     private List<Fragment> allFragments;
     private ProgressBar spinner;
 
-    // TODO: 05/08/2017 add date picker
-    // TODO: 05/08/2017 remove all logs and toast
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
