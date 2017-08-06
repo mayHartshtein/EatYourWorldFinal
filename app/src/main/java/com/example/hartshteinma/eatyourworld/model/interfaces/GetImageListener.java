@@ -7,7 +7,7 @@ import android.graphics.Bitmap;
  */
 
 public interface GetImageListener {
-    void onSccess(Bitmap image);
+    void onSuccess(Bitmap image);
 
     void onFail();
 }

@@ -15,7 +15,7 @@ import com.example.hartshteinma.eatyourworld.model.interfaces.LoginListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.RecipesListListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.RegisterListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.RemoveImageListener;
-import com.example.hartshteinma.eatyourworld.model.interfaces.RemoveListener;
+import com.example.hartshteinma.eatyourworld.model.interfaces.RemoveRecipeListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.SaveImageListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.UploadListener;
 
@@ -28,7 +28,6 @@ import java.util.List;
 
 public class Model
 {
-
     final private static Model instance = new Model();
     private CloudManager cloudManager;
     private AuthManager authManager;
@@ -97,9 +96,9 @@ public class Model
         this.authManager.register(user, registerListener);
     }
 
-    public void removeRecipe(Recipe recipe, RemoveListener removeListener)
+    public void removeRecipe(Recipe recipe, RemoveRecipeListener removeRecipeListener)
     {
-        this.cloudManager.removeRecipe(recipe, removeListener);
+        this.cloudManager.removeRecipe(recipe, removeRecipeListener);
     }
 
     public void editRecipe(Recipe recipe, EditListener editListener)

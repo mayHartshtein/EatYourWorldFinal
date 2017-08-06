@@ -7,9 +7,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -24,7 +22,6 @@ import com.example.hartshteinma.eatyourworld.controller.fragments.RecipesListFra
 import com.example.hartshteinma.eatyourworld.controller.fragments.RegisterFragment;
 import com.example.hartshteinma.eatyourworld.controller.fragments.SignInFragment;
 import com.example.hartshteinma.eatyourworld.model.Model;
-import com.example.hartshteinma.eatyourworld.model.ModelSQL;
 import com.example.hartshteinma.eatyourworld.model.Recipe;
 import com.example.hartshteinma.eatyourworld.model.User;
 import com.example.hartshteinma.eatyourworld.model.interfaces.DownloadListener;
@@ -32,10 +29,9 @@ import com.example.hartshteinma.eatyourworld.model.interfaces.EditListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.LoginListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.RecipesListListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.RegisterListener;
-import com.example.hartshteinma.eatyourworld.model.interfaces.RemoveListener;
+import com.example.hartshteinma.eatyourworld.model.interfaces.RemoveRecipeListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.UploadListener;
 import com.firebase.client.Firebase;
-import com.google.firebase.database.DatabaseError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -223,12 +219,12 @@ public class MainActivity extends Activity
             {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setTitle("Are you sure you want to remove " + recipe.getName() + " recipe?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                        .setNegativeButton("Yes", new DialogInterface.OnClickListener()
                         {
                             @Override
                             public void onClick(DialogInterface dialog, int which)
                             {
-                                Model.getInstance().removeRecipe(recipe, new RemoveListener()
+                                Model.getInstance().removeRecipe(recipe, new RemoveRecipeListener()
                                 {
                                     @Override
                                     public void onRecipeRemoved(boolean success, String errorMsg)
@@ -244,7 +240,7 @@ public class MainActivity extends Activity
                                     }
                                 });
                             }
-                        }).setNegativeButton("No", new DialogInterface.OnClickListener()
+                        }).setPositiveButton("No", new DialogInterface.OnClickListener()
                 {
                     @Override
                     public void onClick(DialogInterface dialog, int which)
@@ -427,7 +423,22 @@ public class MainActivity extends Activity
         }
         else if (recipesListFragment.isVisible())
         {
-            switchToFragment(mainFragment);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Are you sure you want to disconnect?")
+                    .setNegativeButton("Yes", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            switchToFragment(mainFragment);
+                        }
+                    }).setPositiveButton("No", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                }
+            }).show();
         }
         else if (registerFragment.isVisible())
         {

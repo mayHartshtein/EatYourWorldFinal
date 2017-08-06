@@ -16,7 +16,7 @@ import com.example.hartshteinma.eatyourworld.model.interfaces.ImagesLoader;
 import com.example.hartshteinma.eatyourworld.model.interfaces.LoginListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.RegisterListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.RemoveImageListener;
-import com.example.hartshteinma.eatyourworld.model.interfaces.RemoveListener;
+import com.example.hartshteinma.eatyourworld.model.interfaces.RemoveRecipeListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.SaveImageListener;
 import com.example.hartshteinma.eatyourworld.model.interfaces.UploadListener;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -59,13 +59,12 @@ public class ModelFirebase implements CloudManager, AuthManager, ImagesLoader
     @Override
     public void login(String email, String password, final LoginListener loginListener)
     {
-        //"mayhart111@gmail.com", "123456"
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>()
         {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task)
             {
-                String errorMsg = task.getException() != null ? task.getException().getMessage() : "";
+                String errorMsg = (task.getException() != null) ? task.getException().getMessage() : "";
                 loginListener.onLoginFinished(task.isSuccessful(), errorMsg);
             }
         });
@@ -137,17 +136,17 @@ public class ModelFirebase implements CloudManager, AuthManager, ImagesLoader
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference)
             {
-                String errorMsg=(databaseError!=null)?databaseError.getMessage():"";
+                String errorMsg = (databaseError != null) ? databaseError.getMessage() : "";
                 if (uploadListener != null)
                 {
-                    uploadListener.onRecipeAdded(databaseError==null,errorMsg);
+                    uploadListener.onRecipeAdded(databaseError == null, errorMsg);
                 }
             }
         });
     }
 
     @Override
-    public void removeRecipe(final Recipe recipe, final RemoveListener removeListener)
+    public void removeRecipe(final Recipe recipe, final RemoveRecipeListener removeRecipeListener)
     {
         recipesFirebase.child(recipe.getUserId()).child(recipe.getRecipeId()).removeValue(new DatabaseReference.CompletionListener()
         {
@@ -155,7 +154,7 @@ public class ModelFirebase implements CloudManager, AuthManager, ImagesLoader
             public void onComplete(final DatabaseError databaseError, DatabaseReference databaseReference)
             {
                 String errorMsg = (databaseError == null) ? "" : databaseError.getMessage();
-                removeListener.onRecipeRemoved(databaseError == null, errorMsg);
+                removeRecipeListener.onRecipeRemoved(databaseError == null, errorMsg);
             }
         });
     }
@@ -268,7 +267,7 @@ public class ModelFirebase implements CloudManager, AuthManager, ImagesLoader
             public void onSuccess(byte[] bytes)
             {
                 Bitmap image = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                listener.onSccess(image);
+                listener.onSuccess(image);
             }
         }).addOnFailureListener(new OnFailureListener()
         {
@@ -284,7 +283,6 @@ public class ModelFirebase implements CloudManager, AuthManager, ImagesLoader
     public void removeImage(String url, final RemoveImageListener listener)
     {
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        Log.d("NGNGNG", "url = " + url);
         StorageReference httpsReference = storage.getReferenceFromUrl(url);
         httpsReference.delete().addOnCompleteListener(new OnCompleteListener<Void>()
         {

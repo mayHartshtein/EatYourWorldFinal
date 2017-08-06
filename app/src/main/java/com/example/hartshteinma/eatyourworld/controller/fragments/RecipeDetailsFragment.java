@@ -120,7 +120,7 @@ public class RecipeDetailsFragment extends Fragment
                     Model.getInstance().getImage(recipe.getImgSrc(), new GetImageListener()
                     {
                         @Override
-                        public void onSccess(Bitmap image)
+                        public void onSuccess(Bitmap image)
                         {
                             recipeImg.setImageBitmap(image);
                             recipeImg.setVisibility(View.VISIBLE);

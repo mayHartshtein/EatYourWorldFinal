@@ -1,0 +1,4 @@
+<resources>
+    <integer name="select_file">1</integer>
+    <integer name="request_camera">2</integer>
+</resources>

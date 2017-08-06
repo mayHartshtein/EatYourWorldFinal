@@ -49,9 +49,9 @@
         android:id="@+id/recipe_imageView"
         android:layout_width="90dp"
         android:layout_height="80dp"
-        android:layout_below="@id/textView"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/picfood"/>
+        android:src="@drawable/picfood"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"/>
 
     <TableLayout
         android:id="@+id/table_layout"

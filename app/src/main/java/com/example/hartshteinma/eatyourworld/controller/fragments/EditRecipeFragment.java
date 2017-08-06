@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.hartshteinma.eatyourworld.R;
-import com.example.hartshteinma.eatyourworld.controller.Constants;
 import com.example.hartshteinma.eatyourworld.model.Model;
 import com.example.hartshteinma.eatyourworld.model.Recipe;
 import com.example.hartshteinma.eatyourworld.model.interfaces.SaveImageListener;
@@ -168,8 +167,6 @@ public class EditRecipeFragment extends Fragment implements View.OnClickListener
             @Override
             public void onClick(DialogInterface dialog, int item)
             {
-                //boolean result = Utilities.checkPermission(getActivity());
-
                 if (items[item].equals("Take Photo"))
                 {
                     userChoosenTask = "Take Photo";
@@ -196,7 +193,7 @@ public class EditRecipeFragment extends Fragment implements View.OnClickListener
     private void cameraIntent()
     {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, Constants.REQUEST_CAMERA);
+        startActivityForResult(intent, R.integer.request_camera);
     }
 
     private void galleryIntent()
@@ -204,7 +201,7 @@ public class EditRecipeFragment extends Fragment implements View.OnClickListener
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);//
-        startActivityForResult(Intent.createChooser(intent, "Select File"), Constants.SELECT_FILE);
+        startActivityForResult(Intent.createChooser(intent, "Select File"), R.integer.select_file);
     }
 
     @Override
@@ -216,10 +213,10 @@ public class EditRecipeFragment extends Fragment implements View.OnClickListener
         {
             switch (requestCode)
             {
-                case Constants.SELECT_FILE:
+                case R.integer.select_file:
                     onSelectFromGalleryResult(data);
                     break;
-                case Constants.REQUEST_CAMERA:
+                case R.integer.request_camera:
                     onCaptureImageResult(data);
                     break;
             }

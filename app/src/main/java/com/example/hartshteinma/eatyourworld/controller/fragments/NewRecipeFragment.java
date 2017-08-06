@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.hartshteinma.eatyourworld.R;
-import com.example.hartshteinma.eatyourworld.controller.Constants;
 import com.example.hartshteinma.eatyourworld.model.Model;
 import com.example.hartshteinma.eatyourworld.model.Recipe;
 import com.example.hartshteinma.eatyourworld.model.interfaces.SaveImageListener;
@@ -154,7 +153,6 @@ public class NewRecipeFragment extends Fragment implements View.OnClickListener
         recipe.setDetails(detailsEditText.getText().toString());
         recipe.setImgSrc(imageSrc);
         recipe.setName(nameEditText.getText().toString());
-        recipe.setName(nameEditText.getText().toString());
         recipe.setRecipeId(String.valueOf(Calendar.getInstance().getTime()));
         return recipe;
     }
@@ -182,7 +180,6 @@ public class NewRecipeFragment extends Fragment implements View.OnClickListener
             @Override
             public void onClick(DialogInterface dialog, int item)
             {
-                //boolean result = Utilities.checkPermission(getActivity());
 
                 if (items[item].equals("Take Photo"))
                 {
@@ -210,7 +207,7 @@ public class NewRecipeFragment extends Fragment implements View.OnClickListener
     private void cameraIntent()
     {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, Constants.REQUEST_CAMERA);
+        startActivityForResult(intent, R.integer.request_camera);
     }
 
     private void galleryIntent()
@@ -218,9 +215,8 @@ public class NewRecipeFragment extends Fragment implements View.OnClickListener
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);//
-        startActivityForResult(Intent.createChooser(intent, "Select File"), Constants.SELECT_FILE);
+        startActivityForResult(Intent.createChooser(intent, "Select File"), R.integer.select_file);
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
@@ -229,9 +225,9 @@ public class NewRecipeFragment extends Fragment implements View.OnClickListener
         getActivity();
         if (resultCode == Activity.RESULT_OK)
         {
-            if (requestCode == Constants.SELECT_FILE)
+            if (requestCode == R.integer.select_file)
                 onSelectFromGalleryResult(data);
-            else if (requestCode == Constants.REQUEST_CAMERA)
+            else if (requestCode == R.integer.request_camera)
                 onCaptureImageResult(data);
         }
     }
