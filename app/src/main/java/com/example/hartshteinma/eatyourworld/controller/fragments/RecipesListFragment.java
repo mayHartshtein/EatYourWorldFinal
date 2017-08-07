@@ -78,6 +78,7 @@ public class RecipesListFragment extends Fragment {
         }
     }
 
+    /* this class take the information in the list and present it in the listView*/
     class CustomAdapater extends BaseAdapter {
 
         @Override

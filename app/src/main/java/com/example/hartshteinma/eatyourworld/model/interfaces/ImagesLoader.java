@@ -3,8 +3,11 @@ package com.example.hartshteinma.eatyourworld.model.interfaces;
 import android.graphics.Bitmap;
 
 /**
- * Created by zegu23 on 02/08/2017.
+ * Created by hartshteinma on 31/07/2017.
  */
+
+
+/* upload and download the image , all the actions on the images*/
 
 public interface ImagesLoader {
     void saveImage(Bitmap imageBmp, String name, SaveImageListener listener);

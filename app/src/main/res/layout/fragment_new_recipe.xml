@@ -77,13 +77,6 @@
                 android:layout_weight="1"
                 android:inputType="textPersonName"/>
 
-            <!--<EditText
-                android:id="@+id/country_name_editText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Enter country"
-                android:inputType="textPersonName"/>-->
 
         </TableRow>
 

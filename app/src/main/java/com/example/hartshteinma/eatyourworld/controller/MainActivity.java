@@ -430,6 +430,7 @@ public class MainActivity extends Activity
                         public void onClick(DialogInterface dialog, int which)
                         {
                             switchToFragment(mainFragment);
+                            Model.getInstance().resetUser();
                         }
                     }).setPositiveButton("No", new DialogInterface.OnClickListener()
             {

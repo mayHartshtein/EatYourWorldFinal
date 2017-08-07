@@ -47,7 +47,7 @@
                 android:layout_weight="1"
                 android:hint="Enter email address"
                 android:inputType="textEmailAddress"
-                android:text="mayhart111@gmail.com"/>
+                />
 
         </TableRow>
 
@@ -70,7 +70,7 @@
                 android:layout_weight="1"
                 android:hint="Enter password"
                 android:inputType="textPassword"
-                android:text="123456"/>
+                />
         </TableRow>
 
     </TableLayout>

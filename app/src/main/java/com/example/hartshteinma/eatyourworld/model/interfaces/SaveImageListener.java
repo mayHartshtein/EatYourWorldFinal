@@ -1,8 +1,10 @@
 package com.example.hartshteinma.eatyourworld.model.interfaces;
 
 /**
- * Created by zegu23 on 02/08/2017.
+ * Created by hartshteinma on 31/07/2017.
  */
+
+/* wait until the save image action ended complete or failed*/
 
 public interface SaveImageListener
 {

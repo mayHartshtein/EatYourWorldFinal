@@ -163,4 +163,7 @@ public class Model
     {
         return this.localManager.getCurrentUser();
     }
+
+    public void resetUser() { this.localManager.dropTable();
+    }
 }
